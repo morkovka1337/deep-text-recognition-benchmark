@@ -174,6 +174,8 @@ class TokenLabelConverter(object):
         for i, t in enumerate(text):
             txt = [self.GO] + list(t) + [self.SPACE]
             txt = [self.dict[char] for char in txt]
+            if len(txt) > self.batch_max_length:
+                continue
             #prob = np.random.uniform()
             #mask_len = round(len(list(t)) * 0.15)
             #if is_train and mask_len > 0:
@@ -183,7 +185,7 @@ class TokenLabelConverter(object):
             #        if prob > 0.2:
             #            text[index] = self.dict[self.MASK]
             #            batch_weights[i][index] = 1.
-            #        elif prob > 0.1: 
+            #        elif prob > 0.1:
             #            char_index = np.random.randint(len(self.list_token), len(self.character))
             #            text[index] = self.dict[self.character[char_index]]
             #            batch_weights[i][index] = 1.
@@ -274,7 +276,7 @@ def get_args(is_train=True):
     parser.add_argument('--sensitive', action='store_true', help='for sensitive character mode')
     parser.add_argument('--PAD', action='store_true', help='whether to keep ratio then pad for image resize')
     parser.add_argument('--data_filtering_off', action='store_true', help='for data_filtering_off mode')
-    
+
     """ Model Architecture """
     parser.add_argument('--Transformer', action='store_true', help='Use end-to-end transformer')
 
@@ -292,7 +294,7 @@ def get_args(is_train=True):
                         help='the number of output channel of Feature extractor')
     parser.add_argument('--hidden_size', type=int, default=256, help='the size of the LSTM hidden state')
 
-    # selective augmentation 
+    # selective augmentation
     # can choose specific data augmentation
     parser.add_argument('--issel_aug', action='store_true', help='Select augs')
     parser.add_argument('--sel_prob', type=float, default=1., help='Probability of applying augmentation')
@@ -321,6 +323,6 @@ def get_args(is_train=True):
 
     # orig paper uses this for fast benchmarking
     parser.add_argument('--fast_acc', action='store_true', help='Fast average accuracy computation')
-   
+
     args = parser.parse_args()
     return args
